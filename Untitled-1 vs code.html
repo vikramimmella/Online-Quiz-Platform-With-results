@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Quiz Platform</title>
+
+<style>
+/* your existing CSS exactly the same */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    width: 95%;
+    max-width: 900px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    padding: 40px;
+    border-radius: 30px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+    animation: slideInUp 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+    overflow: hidden;
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #ff7a18, #43cea2, #5a4bff);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h1 {
+    text-align: center;
+    background: linear-gradient(45deg, #5a4bff, #ff7a18);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+    font-size: 2.5em;
+    font-weight: 700;
+}
+
+h2 {
+    text-align: center;
+    color: #764ba2;
+    margin-bottom: 30px;
+    font-size: 1.3em;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+input, select {
+    width: 100%;
+    padding: 18px;
+    border: 2px solid #e1e5e9;
+    border-radius: 15px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.8);
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #5a4bff;
+    box-shadow: 0 0 0 4px rgba(90, 75, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+button {
+    width: 100%;
+    padding: 18px;
+    border-radius: 15px;
+    border: none;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #ff7a18, #ffb347);
+    color: white;
+    box-shadow: 0 10px 30px rgba(255, 122, 24, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(255, 122, 24, 0.6);
+}
+
+.btn-primary:active {
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: linear-gradient(45deg, #43cea2, #185a9d);
+    color: white;
+    box-shadow: 0 10px 30px rgba(67, 206, 162, 0.4);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(67, 206, 162, 0.6);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid #5a4bff;
+    color: #5a4bff;
+}
+
+.btn-outline:hover {
+    background: #5a4bff;
+    color: #fff;
+}
+
+.hidden { display: none !important; }
+
+.quiz-header {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #43cea2, #5a4bff);
+    width: 0%;
+    transition: width 0.5s ease;
+    border-radius: 10px;
+}
+
+.question-container {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.question-text {
+    font-size: 1.4em;
+    font-weight: 600;
+    margin-bottom: 25px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.option {
+    padding: 20px;
+    border-radius: 15px;
+    background: linear-gradient(45deg, #f8f9ff, #e8ecff);
+    color: #555;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    font-size: 16px;
+}
+
+.option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border-color: #5a4bff;
+}
+
+.option.selected {
+    background: linear-gradient(45deg, #5a4bff, #667eea);
+    color: white;
+    border-color: #5a4bff;
+}
+
+.option.correct {
+    background: linear-gradient(45deg, #2ecc71, #27ae60) !important;
+    border-color: #27ae60;
+}
+
+.option.wrong {
+    background: linear-gradient(45deg, #e74c3c, #c0392b) !important;
+    border-color: #c0392b;
+}
+
+.btn-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-group button {
+    flex: 1;
+}
+
+.result-container {
+    text-align: center;
+    padding: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+.result-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.stat-item {
+    background: rgba(255,255,255,0.2);
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.stat-number {
+    font-size: 2.5em;
+    font-weight: 800;
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.9em;
+    opacity: 0.9;
+    margin-top: 5px;
+}
+
+.performance-badge {
+    display: inline-block;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 1.3em;
+    font-weight: 700;
+    margin: 20px 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.badge-excellent { background: linear-gradient(45deg, #2ecc71, #27ae60); }
+.badge-good { background: linear-gradient(45deg, #f39c12, #e67e22); }
+.badge-poor { background: linear-gradient(45deg, #e74c3c, #c0392b); }
+
+.student-info {
+    background: rgba(255,255,255,0.2);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.home-subtitle {
+    text-align: center;
+    color: #555;
+    margin-bottom: 25px;
+}
+
+.home-list {
+    margin-top: 10px;
+    line-height: 1.7;
+    color: #555;
+}
+
+.home-list li {
+    margin-bottom: 6px;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.btn-pulse:hover {
+    animation: pulse 0.6s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 25px;
+        margin: 10px;
+    }
+    
+    h1 {
+        font-size: 2em;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HOME PAGE -->
+    <div id="homePage">
+        <h1>Online Quiz Platform</h1>
+        <p class="home-subtitle">
+            Test your knowledge by selecting your academic year and answering multiple‑choice questions.
+        </p>
+        <ul class="home-list">
+            <li>Enter your Name, Roll Number and Year on the next screen.</li>
+            <li>Each year has its own set of questions and difficulty level.</li>
+            <li>View your score, correct/wrong answers and percentage at the end.</li>
+        </ul>
+        <br>
+        <button id="goToLoginBtn" class="btn-primary btn-pulse">Start Now</button>
+    </div>
+
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="hidden">
+        <h1>🎓 Quiz Portal</h1>
+        <h2>Student Login Details</h2>
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" placeholder="Enter your full name">
+        </div>
+        <div class="form-group">
+            <label for="roll">Roll Number</label>
+            <input type="text" id="roll" placeholder="e.g., 2520090016">
+        </div>
+        <div class="form-group">
+            <label for="year">Academic Year</label>
+            <select id="year">
+                <option value="">Select Year</option>
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+            </select>
+        </div>
+        <div class="btn-group">
+            <button id="backHomeBtn" class="btn-outline">⬅️ Home</button>
+            <button id="startBtn" class="btn-primary">🚀 Start Quiz</button>
+        </div>
+    </div>
+
+    <!-- QUIZ PAGE -->
+    <div id="quizPage" class="hidden">
+        <div class="quiz-header">
+            <div id="welcome"></div>
+            <div id="progress"></div>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+        </div>
+        <div class="question-container">
+            <div id="question" class="question-text"></div>
+            <div id="options" class="options-container"></div>
+        </div>
+        <div class="btn-group">
+            <button id="nextBtn" class="btn-secondary">➡️ Next Question</button>
+            <button id="submitBtn" class="btn-primary">✅ Submit Quiz</button>
+        </div>
+    </div>
+
+    <!-- RESULT PAGE -->
+    <div id="resultPage" class="hidden">
+        <h1>📊 Quiz Results</h1>
+        <div class="student-info">
+            <strong id="studentResultInfo"></strong>
+        </div>
+        <div class="result-container">
+            <div id="resultStats" class="result-stats"></div>
+            <div id="resultText"></div>
+            <div id="performanceBadge" class="performance-badge"></div>
+        </div>
+        <div class="btn-group">
+            <button id="resultHomeBtn" class="btn-outline">🏠 Home</button>
+            <button id="restartBtn" class="btn-primary">🔄 New Quiz</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const goToLoginBtn = document.getElementById("goToLoginBtn");
+const backHomeBtn = document.getElementById("backHomeBtn");
+const resultHomeBtn = document.getElementById("resultHomeBtn");
+
+const startBtn = document.getElementById("startBtn");
+const nextBtn = document.getElementById("nextBtn");
+const submitBtn = document.getElementById("submitBtn");
+const restartBtn = document.getElementById("restartBtn");
+
+const homePage = document.getElementById("homePage");
+const loginPage = document.getElementById("loginPage");
+const quizPage = document.getElementById("quizPage");
+const resultPage = document.getElementById("resultPage");
+
+const welcome = document.getElementById("welcome");
+const progress = document.getElementById("progress");
+const progressFill = document.getElementById("progressFill");
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const resultText = document.getElementById("resultText");
+const studentResultInfo = document.getElementById("studentResultInfo");
+const resultStats = document.getElementById("resultStats");
+const performanceBadge = document.getElementById("performanceBadge");
+
+let quizData = [];
+let currentIndex = 0;
+let score = 0;
+let wrongAnswers = 0;
+let userAnswers = [];
+let student = { name: '', roll: '', year: '' };
+
+/* MASK FUNCTION: 2520090016 -> 25200XXXXX */
+function maskRoll(roll) {
+    if (!roll || roll.length <= 5) return roll;
+    return roll.slice(0, 5) + "XXXXX";
+}
+
+function showScreen(screen) {
+    homePage.classList.add("hidden");
+    loginPage.classList.add("hidden");
+    quizPage.classList.add("hidden");
+    resultPage.classList.add("hidden");
+
+    if (screen === "home") homePage.classList.remove("hidden");
+    if (screen === "login") loginPage.classList.remove("hidden");
+    if (screen === "quiz") quizPage.classList.remove("hidden");
+    if (screen === "result") resultPage.classList.remove("hidden");
+}
+
+function generateQuestions(year) {
+    const bank = {
+        1: [
+            {q:"What is the time complexity of binary search?",o:["O(n)","O(log n)","O(n log n)","O(1)"],a:"O(log n)"},
+            {q:"Which data structure uses FIFO?",o:["Stack","Queue","Tree","Graph"],a:"Queue"},
+            {q:"Binary of decimal 10?",o:["1010","1001","1111","1100"],a:"1010"},
+            {q:"HTML is a ____ language",o:["Programming","Markup","Database","Styling"],a:"Markup"},
+            {q:"CSS stands for?",o:["Creative Style Sheets","Cascading Style Sheets","Colorful Style Sheets","Computer Style Sheets"],a:"Cascading Style Sheets"},
+            {q:"Which is not a programming language?",o:["Java","Python","HTML","C++"],a:"HTML"},
+            {q:"RAM is ____ memory",o:["Permanent","Volatile","External","Magnetic"],a:"Volatile"},
+            {q:"CPU full form?",o:["Central Process Unit","Central Processing Unit","Computer Process Unit","Central Processor Utility"],a:"Central Processing Unit"},
+            {q:"Which symbol is used for comments in Java?",o:["//","<!--","##","**"],a:"//"},
+            {q:"1 byte = ? bits",o:["4","8","16","2"],a:"8"},
+            {q:"Loop that executes at least once",o:["for","while","do-while","foreach"],a:"do-while"},
+            {q:"Array index starts from",o:["0","1","-1","Depends"],a:"0"},
+            {q:"Which is OS?",o:["Windows","Python","Oracle","HTML"],a:"Windows"},
+            {q:"Full form of URL",o:["Uniform Resource Locator","Universal Resource Link","Uniform Remote Locator","Unique Resource Locator"],a:"Uniform Resource Locator"},
+            {q:"Which is input device?",o:["Monitor","Printer","Keyboard","Speaker"],a:"Keyboard"},
+            {q:"Primary key must be",o:["Unique","Null","Duplicate","Optional"],a:"Unique"},
+            {q:"Compiler converts",o:["Code to Machine Code","Machine to Code","Binary to Decimal","None"],a:"Code to Machine Code"},
+            {q:"Which is not DBMS?",o:["MySQL","Oracle","MongoDB","Windows"],a:"Windows"},
+            {q:"LAN stands for",o:["Local Area Network","Large Area Network","Line Area Network","Low Area Network"],a:"Local Area Network"},
+            {q:"Which is logic gate?",o:["AND","ADD","SUB","DIV"],a:"AND"},
+            {q:"Decimal 5 in binary",o:["101","111","110","100"],a:"101"},
+            {q:"Java is",o:["Compiled","Interpreted","Both","None"],a:"Both"},
+            {q:"Which is cloud platform?",o:["AWS","Linux","BIOS","CPU"],a:"AWS"},
+            {q:"Stack works on",o:["FIFO","LIFO","Random","Priority"],a:"LIFO"},
+            {q:"Which is search engine?",o:["Google","Windows","Linux","Java"],a:"Google"}
+        ],
+        2: [
+            {q:"Which traversal uses stack?",o:["BFS","DFS","Level","Binary"],a:"DFS"},
+            {q:"Best sorting algorithm average case",o:["Merge Sort","Bubble","Selection","Linear"],a:"Merge Sort"},
+            {q:"Which protocol used for web?",o:["HTTP","FTP","SMTP","SNMP"],a:"HTTP"},
+            {q:"Normalization removes",o:["Redundancy","Security","Tables","Keys"],a:"Redundancy"},
+            {q:"Which is linear DS?",o:["Tree","Graph","Array","Heap"],a:"Array"},
+            {q:"SQL command to fetch data",o:["GET","SELECT","FETCH","SHOW"],a:"SELECT"},
+            {q:"Deadlock occurs in",o:["OS","HTML","CSS","Excel"],a:"OS"},
+            {q:"Process state not valid",o:["Ready","Running","Blocked","FinishedForever"],a:"FinishedForever"},
+            {q:"Which is NoSQL DB?",o:["MongoDB","MySQL","Oracle","DB2"],a:"MongoDB"},
+            {q:"TCP is",o:["Connection oriented","Connectionless","Hardware","Language"],a:"Connection oriented"},
+            {q:"Hashing complexity",o:["O(1)","O(n)","O(logn)","O(n²)"],a:"O(1)"},
+            {q:"Heap is",o:["Tree","Graph","Stack","Queue"],a:"Tree"},
+            {q:"Which is not OS scheduling?",o:["FCFS","SJF","RR","DNS"],a:"DNS"},
+            {q:"JOIN used in",o:["DBMS","OS","Compiler","Network"],a:"DBMS"},
+            {q:"IPv4 length",o:["32 bit","64 bit","128 bit","16 bit"],a:"32 bit"},
+            {q:"Which layer is TCP?",o:["Transport","Network","Session","Physical"],a:"Transport"},
+            {q:"Semaphore used for",o:["Synchronization","Compilation","Storage","Routing"],a:"Synchronization"},
+            {q:"Disk scheduling algorithm",o:["SCAN","JOIN","MERGE","PUSH"],a:"SCAN"},
+            {q:"Compiler phase first",o:["Lexical","Syntax","Semantic","Code"],a:"Lexical"},
+            {q:"ER diagram used in",o:["DB design","OS","Network","AI"],a:"DB design"},
+            {q:"Which is dynamic DS?",o:["LinkedList","Array","Matrix","String"],a:"LinkedList"},
+            {q:"Page replacement algo",o:["LRU","JOIN","PUSH","CALL"],a:"LRU"},
+            {q:"Which is routing protocol?",o:["RIP","HTML","CSS","XML"],a:"RIP"},
+            {q:"OSI layers count",o:["7","5","4","6"],a:"7"},
+            {q:"Which is virtualization?",o:["VMware","Chrome","Excel","Paint"],a:"VMware"}
+        ],
+        3: [
+            {q:"Machine learning subset of",o:["AI","DBMS","OS","CN"],a:"AI"},
+            {q:"Which algorithm supervised?",o:["Linear Regression","K-means","Apriori","DBSCAN"],a:"Linear Regression"},
+            {q:"Normalization technique in ML",o:["Min-Max","JOIN","SCAN","MERGE"],a:"Min-Max"},
+            {q:"Which is frontend framework?",o:["React","Django","Flask","Spring"],a:"React"},
+            {q:"REST stands for",o:["Representational State Transfer","Remote Execution State","Random Execution State","None"],a:"Representational State Transfer"},
+            {q:"HTTP status 404 means",o:["Not Found","OK","Server Error","Forbidden"],a:"Not Found"},
+            {q:"Big O of quicksort avg",o:["n log n","n²","n","log n"],a:"n log n"},
+            {q:"Which is container tool?",o:["Docker","Git","Linux","Node"],a:"Docker"},
+            {q:"Git command to copy repo",o:["clone","push","pull","init"],a:"clone"},
+            {q:"Blockchain uses",o:["Hash","Array","Stack","Queue"],a:"Hash"},
+            {q:"Which is backend JS runtime?",o:["Node.js","React","Vue","Angular"],a:"Node.js"},
+            {q:"API stands for",o:["Application Programming Interface","Applied Program Internet","Advanced Program Interface","None"],a:"Application Programming Interface"},
+            {q:"Which DB is graph based?",o:["Neo4j","MySQL","MongoDB","SQLite"],a:"Neo4j"},
+            {q:"Agile is",o:["Methodology","Language","OS","DB"],a:"Methodology"},
+            {q:"Scrum meeting daily",o:["Standup","Sprint","Review","Retro"],a:"Standup"},
+            {q:"Testing type",o:["Unit","Loop","Array","Stack"],a:"Unit"},
+            {q:"Encryption converts",o:["Plain→Cipher","Cipher→Plain","Code→Binary","Binary→Text"],a:"Plain→Cipher"},
+            {q:"Which attack intercepts data",o:["MITM","SQL","XSS","DOS"],a:"MITM"},
+            {q:"Cloud model",o:["IaaS","HTML","CSS","CPU"],a:"IaaS"},
+            {q:"Which is Python framework?",o:["Django","Spring","Laravel","Rails"],a:"Django"},
+            {q:"Data mining finds",o:["Patterns","Errors","Viruses","Packets"],a:"Patterns"},
+            {q:"Which is message broker?",o:["Kafka","React","HTML","CSS"],a:"Kafka"},
+            {q:"Load balancer does",o:["Distributes traffic","Stores data","Compiles code","Encrypts"],a:"Distributes traffic"},
+            {q:"DevOps combines",o:["Dev+Ops","HTML+CSS","CPU+RAM","LAN+WAN"],a:"Dev+Ops"},
+            {q:"Which is CI/CD tool?",o:["Jenkins","Excel","Word","Paint"],a:"Jenkins"}
+        ],
+        4: [
+            {q:"Time complexity of Dijkstra (heap)",o:["E log V","V²","E²","log V"],a:"E log V"},
+            {q:"NP complete problems relate to",o:["Complexity","Networking","DB","OS"],a:"Complexity"},
+            {q:"Which is deep learning lib?",o:["TensorFlow","NumPy","Pandas","Matplotlib"],a:"TensorFlow"},
+            {q:"CNN used for",o:["Images","Text","Audio","Tables"],a:"Images"},
+            {q:"Which protocol secure web?",o:["HTTPS","FTP","SMTP","HTTP"],a:"HTTPS"},
+            {q:"RSA is",o:["Encryption","Compression","Sorting","Routing"],a:"Encryption"},
+            {q:"Kubernetes manages",o:["Containers","Files","RAM","CPU"],a:"Containers"},
+            {q:"Microservices communicate via",o:["API","Array","Stack","Loop"],a:"API"},
+            {q:"CAP theorem relates",o:["Distributed systems","DB","OS","HTML"],a:"Distributed systems"},
+            {q:"Which is functional language?",o:["Haskell","C","Java","C++"],a:"Haskell"},
+            {q:"Big data 3Vs",o:["Volume Velocity Variety","Value Vector Voltage","None","All"],a:"Volume Velocity Variety"},
+            {q:"Hadoop storage",o:["HDFS","NTFS","FAT","EXT"],a:"HDFS"},
+            {q:"MapReduce does",o:["Parallel processing","Sorting","Linking","Routing"],a:"Parallel processing"},
+            {q:"Which is edge computing?",o:["Processing near source","Cloud","Server","DB"],a:"Processing near source"},
+            {q:"Quantum bit called",o:["Qubit","Bit","Byte","Word"],a:"Qubit"},
+            {q:"5G mainly improves",o:["Latency","Color","Sound","Storage"],a:"Latency"},
+            {q:"Which is AR library?",o:["ARCore","TensorFlow","React","Node"],a:"ARCore"},
+            {q:"Ethical hacking goal",o:["Security testing","Stealing","Spying","Deleting"],a:"Security testing"},
+            {q:"Which is serverless platform?",o:["AWS Lambda","EC2","S3","RDS"],a:"AWS Lambda"},
+            {q:"Blockchain block contains",o:["Hash","Loop","Stack","Array"],a:"Hash"},
+            {q:"Which scheduling realtime",o:["EDF","FCFS","RR","SJF"],a:"EDF"},
+            {q:"Compiler optimization phase",o:["Code Opt","Lexical","Syntax","Parsing"],a:"Code Opt"},
+            {q:"Which is biometric auth?",o:["Fingerprint","Password","PIN","OTP"],a:"Fingerprint"},
+            {q:"IoT connects",o:["Devices","Tables","Files","Pages"],a:"Devices"},
+            {q:"Edge AI runs",o:["On device","Cloud","Server","DB"],a:"On device"}
+        ]
+    };
+
+    return bank[year].map(x => ({
+        question: x.q,
+        options: x.o,
+        answer: x.a
+    }));
+}
+
+function loadQuestion() {
+    if (currentIndex >= quizData.length) {
+        finishQuiz();
+        return;
+    }
+
+    const q = quizData[currentIndex];
+
+    progress.textContent = `Question ${currentIndex + 1} of ${quizData.length}`;
+    const percent = (currentIndex / quizData.length) * 100;
+    progressFill.style.width = percent + "%";
+
+    questionEl.textContent = q.question;
+    optionsEl.innerHTML = "";
+
+    q.options.forEach(opt => {
+        const div = document.createElement("div");
+        div.className = "option";
+        div.textContent = opt;
+
+        if (userAnswers[currentIndex] === opt) {
+            div.classList.add("selected");
+        }
+
+        div.onclick = () => {
+            userAnswers[currentIndex] = opt;
+            Array.from(optionsEl.children).forEach(c => c.classList.remove("selected"));
+            div.classList.add("selected");
+        };
+
+        optionsEl.appendChild(div);
+    });
+}
+
+function finishQuiz() {
+    showScreen("result");
+
+    score = 0;
+    wrongAnswers = 0;
+
+    quizData.forEach((q, i) => {
+        if (userAnswers[i] === q.answer) score++;
+        else if (userAnswers[i] != null) wrongAnswers++;
+    });
+
+    const total = quizData.length;
+    const notAttempted = total - score - wrongAnswers;
+    const percent = Math.round((score / total) * 100);
+
+    let badgeText = "";
+    let badgeClass = "";
+
+    if (percent >= 80) {
+        badgeText = "Excellent Performance";
+        badgeClass = "badge-excellent";
+    } else if (percent >= 50) {
+        badgeText = "Good Job, Keep Practicing";
+        badgeClass = "badge-good";
+    } else {
+        badgeText = "Needs More Practice";
+        badgeClass = "badge-poor";
+    }
+
+    const maskedRoll = maskRoll(student.roll);
+
+    studentResultInfo.textContent =
+        `Name: ${student.name} | Roll: ${maskedRoll} | Year: ${student.year} | Score: ${score}/${total}`;
+
+    resultStats.innerHTML = `
+        <div class="stat-item">
+            <span class="stat-number">${score}</span>
+            <span class="stat-label">Correct</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">${wrongAnswers}</span>
+            <span class="stat-label">Wrong</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">${notAttempted}</span>
+            <span class="stat-label">Not Attempted</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">${percent}%</span>
+            <span class="stat-label">Percentage</span>
+        </div>
+    `;
+
+    resultText.innerHTML =
+        `You answered <b>${score}</b> out of <b>${total}</b> questions correctly.`;
+
+    performanceBadge.className = "performance-badge " + badgeClass;
+    performanceBadge.textContent = badgeText;
+}
+
+/* Navigation buttons */
+goToLoginBtn.onclick = () => {
+    showScreen("login");
+};
+
+backHomeBtn.onclick = () => {
+    showScreen("home");
+};
+
+resultHomeBtn.onclick = () => {
+    // Clear data when going back to home from result
+    currentIndex = 0;
+    score = 0;
+    wrongAnswers = 0;
+    userAnswers = [];
+    document.getElementById("name").value = "";
+    document.getElementById("roll").value = "";
+    document.getElementById("year").value = "";
+    showScreen("home");
+};
+
+/* Start quiz from login */
+startBtn.onclick = () => {
+    const name = document.getElementById("name").value.trim();
+    const roll = document.getElementById("roll").value.trim();
+    const year = document.getElementById("year").value;
+
+    if (!name || !roll || !year) {
+        alert("Please fill all details");
+        return;
+    }
+
+    student = { name, roll, year };
+
+    quizData = generateQuestions(year);
+    userAnswers = new Array(quizData.length).fill(null);
+    currentIndex = 0;
+
+    const maskedRoll = maskRoll(roll);
+    welcome.textContent = `Welcome ${name} | Roll: ${maskedRoll} | Year ${year}`;
+
+    showScreen("quiz");
+    loadQuestion();
+};
+
+nextBtn.onclick = () => {
+    if (currentIndex < quizData.length - 1) {
+        currentIndex++;
+        loadQuestion();
+    } else {
+        alert("This is the last question. Click Submit to finish the quiz.");
+    }
+};
+
+submitBtn.onclick = () => {
+    if (!confirm("Do you want to submit the quiz?")) return;
+    finishQuiz();
+};
+
+restartBtn.onclick = () => {        
+    // New quiz with same student, go to login again
+    currentIndex = 0;
+    score = 0;
+    wrongAnswers = 0;
+    userAnswers = [];
+    document.getElementById("name").value = "";
+    document.getElementById("roll").value = "";
+    document.getElementById("year").value = "";
+    showScreen("login");
+};
+
+/* Initial screen */
+showScreen("home");
+</script>
+</body>
+</html>
